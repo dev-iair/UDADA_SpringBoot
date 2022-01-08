@@ -1,0 +1,5 @@
+spring:
+  datasource:
+    url: jdbc:mariadb://132.145.89.225:3306/mariadb
+    driverClassName: org.mariadb.jdbc.Driver
+    username: mariadb
