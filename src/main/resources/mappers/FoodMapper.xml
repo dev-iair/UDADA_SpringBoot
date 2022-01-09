@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="org.ourapp.udada.mapper.FoodMapper">
+
+	<resultMap type="org.ourapp.udada.food.FoodDTO" id="foodMap">
+			<id column="F_NO" property="fNo"/>
+			<result column="F_NAME" property="fName"/>
+			<result column="F_MJCLASS" property="fMjclass"/>
+			<result column="F_MNCLASS" property="fMinclass"/>
+			<result column="F_ONCEOFFER" property="fOnceoffer"/>
+			<result column="F_KCAL" property="fKcal"/>
+			<result column="F_PROTEIN" property="fProtein"/>
+			<result column="F_FAT" property="fFat"/>
+			<result column="F_CARBO" property="fCarbo"/>
+	</resultMap>
+	
+	<select id="getList" resultMap="foodMap">
+		SELECT DISTINCT(F_MJCLASS) FROM FOOD ORDER BY F_MJCLASS
+	</select>
+	
+	<select id="getMinList" parameterType="string" resultMap="foodMap">
+		SELECT DISTINCT(F_MNCLASS) FROM FOOD WHERE F_MJCLASS LIKE #{fMjclass} ORDER BY F_MNCLASS
+	</select>
+	
+	<select id="getFoodList" parameterType="string" resultMap="foodMap">
+		<!-- SELECT F_NAME FROM FOOD WHERE F_MNCLASS LIKE #{fMnclass} ORDER BY F_NAME -->
+		SELECT F_NO, F_NAME, F_KCAL, F_ONCEOFFER, F_CARBO, F_FAT, F_PROTEIN FROM FOOD WHERE F_NO = #{fNo}
+		
+	</select>
+	
+	<insert id="insertFoodMy">
+		INSERT INTO FOOD_MY(FM_NO, M_EMAIL, FM_DATE, FM_AMOUNT, F_NO) 
+		VALUES (SEQ_FM.NEXTVAL, #{mEmail} , TO_DATE( #{fmDate} , 'YYYY-MM-DD') ,#{fmAmount} , #{fNo} )
+	</insert>
+	
+	<select id="selectByFName" resultMap="foodMap">
+		<![CDATA[
+			SELECT * FROM FOOD WHERE F_NAME LIKE ''||#{keyword}||'%'  AND ROWNUM <= 8
+	    ]]>
+	</select>
+	
+</mapper>

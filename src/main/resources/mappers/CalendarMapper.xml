@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="org.ourapp.udada.mapper.CalendarMapper">
+	<resultMap type="org.ourapp.udada.calendar.CalendarDTO" id="calendarMap">
+			<result column="DAYS" property="calendarDate"/>
+			<result column="NVL(B.STK,0)" property="totalKcal"/>
+			<result column="NVL(B.STP,0)" property="totalProtein"/>
+			<result column="NVL(B.STF,0)" property="totalFat"/>
+			<result column="NVL(B.STC,0)" property="totalCarbo"/>
+	</resultMap>
+	
+	<select id="select" resultMap="calendarMap">
+	
+	<![CDATA[
+	SELECT A.*, NVL(B.STK,0),NVL(B.STP,0), NVL(B.STF,0) ,NVL(B.STC,0)
+	FROM
+	(SELECT TO_CHAR(CURRENT_DATE - LEVEL ,'YYYY-MM-DD') AS DAYS FROM DUAL
+	CONNECT BY LEVEL <= 7) A
+	LEFT JOIN (
+	
+	SELECT SUB.CALENDAR, SUM(SUB.TOTAL_KCAL) AS STK ,SUM(SUB.TOTAL_PROTEIN) AS STP ,SUM(SUB.TOTAL_FAT) AS STF ,
+	SUM(SUB.TOTAL_CARBO) AS STC
+	FROM (
+	    SELECT 
+	    TO_CHAR(FM.FM_DATE, 'YYYY-MM-DD') AS CALENDAR,
+	    SUM(FM.FM_AMOUNT*V.SUM_KCAL) AS TOTAL_KCAL, 
+	    SUM(FM.FM_AMOUNT*V.SUM_PROTEIN) AS TOTAL_PROTEIN,
+	    SUM(FM.FM_AMOUNT*V.SUM_FAT)  AS TOTAL_FAT,
+	    SUM(FM.FM_AMOUNT*V.SUM_CARBO)  AS TOTAL_CARBO
+	    FROM V_RECIPE_SPEC V
+	    LEFT OUTER JOIN FOOD_MY FM
+	    ON V.R_NO= FM.R_NO
+	    WHERE FM.M_EMAIL = #{mEmail} 
+	    GROUP BY TO_CHAR(FM.FM_DATE, 'YYYY-MM-DD')
+	    
+	    UNION ALL
+	    
+	    SELECT 
+	    TO_CHAR(FM.FM_DATE, 'YYYY-MM-DD') AS CALENDAR ,
+	    SUM(FM.FM_AMOUNT*F.F_KCAL) AS TOTAL_KCAL,
+	    SUM(FM.FM_AMOUNT*F.F_PROTEIN)AS TOTAL_PROTEIN,
+	    SUM(FM.FM_AMOUNT*F.F_FAT) AS TOTAL_FAT,
+	    SUM(FM.FM_AMOUNT*F.F_CARBO) AS TOTAL_CARBO
+	    FROM FOOD F
+	    INNER JOIN FOOD_MY FM
+	    ON F.F_NO = FM.F_NO
+	    WHERE M_EMAIL = #{mEmail}
+	    GROUP BY TO_CHAR(FM.FM_DATE, 'YYYY-MM-DD')
+	    
+	    ) SUB
+
+	GROUP BY SUB.CALENDAR
+	HAVING SUB.CALENDAR BETWEEN TO_CHAR(CURRENT_DATE-7,'YYYY-MM-DD') AND TO_CHAR(CURRENT_DATE-1,'YYYY-MM-DD')
+
+	) B
+	
+	ON A.DAYS = B.CALENDAR
+	ORDER BY A.DAYS 
+		
+	]]>
+	</select>
+	
+	<select id="selectByMonth" resultMap="calendarMap">
+	<![CDATA[
+	
+		SELECT A.*, NVL(B.STK,0),NVL( B.STP,0), NVL(B.STF,0) ,NVL(B.STC,0)
+		FROM
+		(SELECT TO_CHAR(TO_DATE( #{calendarDate} ,'YYYY-MM-DD')-LEVEL,'YYYY-MM-DD') AS DAYS FROM DUAL CONNECT BY LEVEL <= 31) A
+		LEFT JOIN (
+		
+		SELECT SUB.CALENDAR, SUM(SUB.TOTAL_KCAL) AS STK ,SUM(SUB.TOTAL_PROTEIN) AS STP ,SUM(SUB.TOTAL_FAT) AS STF ,
+		SUM(SUB.TOTAL_CARBO) AS STC
+		FROM (
+		    SELECT 
+		    TO_CHAR(FM.FM_DATE, 'YYYY-MM-DD') AS CALENDAR,
+		    SUM(FM.FM_AMOUNT*V.SUM_KCAL) AS TOTAL_KCAL, 
+		    SUM(FM.FM_AMOUNT*V.SUM_PROTEIN) AS TOTAL_PROTEIN,
+		    SUM(FM.FM_AMOUNT*V.SUM_FAT)  AS TOTAL_FAT,
+		    SUM(FM.FM_AMOUNT*V.SUM_CARBO)  AS TOTAL_CARBO
+		    FROM V_RECIPE_SPEC V
+		    LEFT OUTER JOIN FOOD_MY FM
+		    ON V.R_NO= FM.R_NO
+		    WHERE FM.M_EMAIL = #{mEmail}
+		    GROUP BY TO_CHAR(FM.FM_DATE, 'YYYY-MM-DD')
+		    
+		    UNION ALL
+		    
+		    SELECT 
+		    TO_CHAR(FM.FM_DATE, 'YYYY-MM-DD') AS CALENDAR ,
+		    SUM(FM.FM_AMOUNT*F.F_KCAL) AS TOTAL_KCAL,
+		    SUM(FM.FM_AMOUNT*F.F_PROTEIN)AS TOTAL_PROTEIN,
+		    SUM(FM.FM_AMOUNT*F.F_FAT) AS TOTAL_FAT,
+		    SUM(FM.FM_AMOUNT*F.F_CARBO) AS TOTAL_CARBO
+		    FROM FOOD F
+		    INNER JOIN FOOD_MY FM
+		    ON F.F_NO = FM.F_NO
+		    WHERE M_EMAIL = #{mEmail}
+		    GROUP BY TO_CHAR(FM.FM_DATE, 'YYYY-MM-DD')
+		    
+		    ) SUB
+		
+		GROUP BY SUB.CALENDAR
+		HAVING SUB.CALENDAR BETWEEN TO_CHAR(TO_DATE( #{calendarDate} ,'YYYY-MM-DD')-31,'YYYY-MM-DD') 
+		    AND TO_CHAR(TO_DATE( #{calendarDate} ,'YYYY-MM-DD')-1,'YYYY-MM-DD')
+		
+		) B
+		
+		ON A.DAYS = B.CALENDAR
+		ORDER BY A.DAYS 
+	]]>
+	</select>
+</mapper>

@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="org.ourapp.udada.mapper.RecipeMapper">
+
+	<resultMap type="org.ourapp.udada.recipe.RecipeDTO" id="recipeMap">
+			<id column="R_NO" property="rNo"/>
+			<result column="M_EMAIL" property="mEmail"/>
+			<result column="R_TITLE" property="rTitle"/>
+			<result column="R_CONTENT" property="rContent"/>
+			<result column="R_DATE" property="rDate"/>
+			<result column="REPLYCNT" property="replyCnt"/>
+			<association property="imageDTO" resultMap="imageMap" />
+			<collection property="ingredientList" resultMap="recipeIngredientMap"></collection>
+			<collection property="replyList" resultMap="replyMap"></collection>
+	</resultMap>
+	
+	<resultMap type="org.ourapp.udada.recipe.RecipeIngredientDTO" id="recipeIngredientMap">
+			<id column="RI_NO" property="riNo"/>
+			<result column="R_NO" property="rNo"/>
+			<result column="F_NO" property="fNo"/>
+			<result column="RI_AMOUNT" property="riAmount"/>
+			<result column="F_NAME" property="fName"/>
+	</resultMap>
+	
+	<resultMap type="org.ourapp.udada.image.ImageDTO" id="imageMap" >
+		  	<id column="I_UUID" property="iUuid"/>
+		 	<result column="ORI_NO" property="oriNo"/>
+			<result column="I_NAME" property="iName"/>
+			<result column="I_DIR" property="iDir"/>
+			<result column="I_DIV" property="iDiv"/>
+	</resultMap>
+	
+	<resultMap type="org.ourapp.udada.recipe.RecipeSpecDTO" id="recipeSpecMap" >
+		  	<id column="R_NO" property="rNo"/>
+		 	<result column="R_TITLE" property="rTitle"/>
+			<result column="SUM_KCAL" property="sumKcal"/>
+			<result column="SUM_PROTEIN" property="sumProtein"/>
+			<result column="SUM_FAT" property="sumFat"/>
+			<result column="SUM_CARBO" property="sumCarbo"/>
+	</resultMap>
+
+	<resultMap type="org.ourapp.udada.reply.ReplyDTO" id="replyMap">
+		<id column="RE_NO" property="reNo"/>
+		<result column="ORI_NO" property="oriNo"/>
+		<result column="REMEMAIL" property="mEmail"/>
+		<result column="RE_CONTENT" property="reContent"/>
+		<result column="RE_DATE" property="reDate"/>
+		<result column="RE_DIV" property="reDiv"/>
+		<result column="RE_GROUP" property="reGroup"/>
+		<result column="RE_INDENT" property="reIndent"/>
+	</resultMap>
+	
+
+	<select id="getList" resultMap="recipeMap">
+		SELECT * FROM RECIPE ORDER BY R_NO DESC
+	</select>
+	<select id="read" parameterType="long" resultMap="recipeMap">
+		SELECT * FROM RECIPE WHERE R_NO = #{rNo}
+	</select>
+	<insert id="register">
+		INSERT INTO RECIPE(R_NO, M_EMAIL, R_TITLE, R_CONTENT )
+		VALUES (SEQ_RECIPE.NEXTVAL, #{mEmail} ,#{rTitle},#{rContent}) 
+	</insert>
+	<insert id="insertSelectKey">
+	<selectKey order="BEFORE" keyProperty="rNo" resultType="long">
+		SELECT SEQ_RECIPE.NEXTVAL FROM DUAL
+	</selectKey>
+		INSERT INTO RECIPE(R_NO, M_EMAIL, R_TITLE, R_CONTENT )
+		VALUES (#{rNo}, #{mEmail} ,#{rTitle},#{rContent}) 
+	</insert>
+	<update id="update" >
+		UPDATE RECIPE SET M_EMAIL = #{mEmail} , R_TITLE = #{rTitle}, R_CONTENT = #{rContent}
+		WHERE R_NO = #{rNo}
+	</update>
+	<delete id="delete">
+		DELETE FROM RECIPE WHERE R_NO = #{rNo}
+	</delete>
+	
+	<select id="selectWithIngredient" resultMap="recipeMap">
+		SELECT R.*, RI.* FROM RECIPE R
+		LEFT JOIN RECIPE_INGREDIENT RI 
+		ON R.R_NO = RI.R_NO
+		WHERE R.R_NO = #{rNo}
+		ORDER BY R.R_NO DESC	
+	</select>
+	<select id="selectWithIngredientAndFood" resultMap="recipeMap">
+		SELECT R.*, RI.*, F.* FROM RECIPE R
+		LEFT JOIN RECIPE_INGREDIENT RI 
+		ON R.R_NO = RI.R_NO
+		LEFT JOIN FOOD F
+		ON RI.F_NO = F.F_NO
+		WHERE R.R_NO = #{rNo}
+	</select>
+	<select id="selectWithPaging" resultMap="recipeMap">
+	<![CDATA[
+		SELECT * FROM(
+		SELECT 
+		/*+ INDEX_DESC(R PK_RECIPE)*/
+		R.R_NO, R.M_EMAIL ,R.R_TITLE, R.R_CONTENT, R.R_DATE, ROWNUM RN 
+		FROM RECIPE R
+		WHERE ROWNUM <= #{pageNum} * #{pageSize}
+		) SUB 
+		WHERE SUB.RN > (#{pageNum}-1) * #{pageSize} 
+			
+	]]>
+	</select>
+	<select id="countAll" resultType="int">
+		SELECT COUNT(R_NO) FROM RECIPE
+		
+	</select>
+	
+	<select id="selectWithImageAndPaging" resultMap="recipeMap">
+	<![CDATA[
+		SELECT * FROM(
+		SELECT SSUB.*,I.* FROM (SELECT 
+		/*+ INDEX_DESC(R PK_RECIPE)*/
+		R.R_NO, R.M_EMAIL ,R.R_TITLE, R.R_CONTENT, R.R_DATE, ROWNUM RN 
+		
+		FROM RECIPE R 
+		ORDER BY R_NO DESC
+		) SSUB
+		LEFT JOIN IMAGE I
+		ON SSUB.R_NO = I.ORI_NO
+		) SUB 
+		WHERE SUB.RN > (#{pageNum}-1) * #{pageSize}  AND SUB.RN <= #{pageNum} * #{pageSize}
+	]]>
+	
+	</select>
+	
+	<select id="selectWithIngreAndFoodAndImage" resultMap="recipeMap" >
+		SELECT R.*, RI.*, F.* , I.* FROM RECIPE R
+		LEFT JOIN RECIPE_INGREDIENT RI 
+		ON R.R_NO = RI.R_NO
+		LEFT JOIN FOOD F
+		ON RI.F_NO = F.F_NO
+        LEFT JOIN IMAGE I
+        ON R.R_NO = I.ORI_NO
+		WHERE R.R_NO = #{rNo}
+	
+	</select>
+	
+	<select id="selectWithImageAndPagingAndSearch" resultMap="recipeMap">
+	
+	<![CDATA[
+		SELECT SSUB.* FROM
+        (SELECT SUB.*, ROWNUM AS RN FROM
+        (SELECT 
+		R.R_NO , R.M_EMAIL ,R.R_TITLE, R.R_CONTENT, R.R_DATE ,I.I_UUID, I.I_DIV, I.ORI_NO, I.I_NAME, I.I_DIR,
+        COUNT(RE.RE_NO)AS REPLYCNT
+		FROM RECIPE R 
+        LEFT JOIN IMAGE I
+        ON R.R_NO = I.ORI_NO 
+        LEFT JOIN REPLY RE
+        ON R.R_NO = RE.ORI_NO 
+        
+       ]]>     		
+    <where>  
+    	
+	<if test = "keyword != null">
+		R.R_TITLE LIKE '%'||#{keyword}||'%'
+	</if>
+	</where>  
+	
+	 GROUP BY R.R_NO,R.M_EMAIL ,R.R_TITLE, R.R_CONTENT, R.R_DATE ,I.I_UUID, I.I_DIV, I.ORI_NO, I.I_NAME, I.I_DIR
+    <![CDATA[
+		ORDER BY R.R_NO DESC)SUB )SSUB    
+        WHERE SSUB.RN > (#{pageNum}-1) * #{pageSize} AND SSUB.RN <= #{pageNum} * #{pageSize}          
+	]]>
+	</select>
+	
+	<select id="countAllWithSearch" resultType="int">
+		SELECT COUNT(R_NO) FROM RECIPE
+	<where>  
+		<if test = "keyword != null">
+		R_TITLE LIKE '%'||#{keyword}||'%'
+		</if>
+	</where>
+	</select>
+	
+	<select id="selectRecipeSpecByRNo" resultMap="recipeSpecMap">	
+		SELECT * FROM V_RECIPE_SPEC WHERE R_NO = #{rNo}
+	</select>
+	<insert id="insertFoodMy">
+		INSERT INTO FOOD_MY(FM_NO, M_EMAIL, FM_DATE, FM_AMOUNT, R_NO) 
+		VALUES (SEQ_FM.NEXTVAL, #{mEmail} , TO_DATE( #{fmDate} , 'YYYY-MM-DD') ,#{fmAmount} , #{rNo} )
+	</insert>
+	
+	<select id="selectByMEmail" resultMap="recipeMap">
+		<![CDATA[
+	 SELECT * FROM(
+		SELECT SSUB.*,I.* FROM (SELECT 
+		/*+ INDEX_DESC(R PK_RECIPE)*/
+		R.R_NO, R.M_EMAIL ,R.R_TITLE, R.R_CONTENT, R.R_DATE, ROWNUM RN 
+		
+		FROM RECIPE R 
+        WHERE M_EMAIL = #{keyword}
+		ORDER BY R_NO DESC
+		) SSUB
+		LEFT JOIN IMAGE I
+		ON SSUB.R_NO = I.ORI_NO
+		
+		) SUB 
+		WHERE SUB.RN > (#{pageNum}-1) * #{pageSize}  AND SUB.RN <= #{pageNum} * #{pageSize}
+	
+	       ]]> 
+	</select>
+	<select id="countAllWithMEmail"  resultType="int">
+		SELECT COUNT(R_NO) FROM RECIPE
+	<where>
+		<if test="keyword != null">
+			M_EMAIL = #{keyword}
+		</if>
+	</where>	
+	</select>
+	
+	<select id="selectWithIngreAndFoodAndImageAndReply" resultMap="recipeMap">
+		SELECT R.*, RI.*, F.* , I.*, RE.M_EMAIL AS REMEMAIL,RE.RE_NO,RE.ORI_NO,RE.RE_CONTENT, RE.RE_DATE, RE.RE_DIV,
+    	RE.RE_GROUP, RE.RE_INDENT FROM RECIPE R
+		LEFT JOIN RECIPE_INGREDIENT RI 
+		ON R.R_NO = RI.R_NO
+		LEFT JOIN FOOD F
+		ON RI.F_NO = F.F_NO
+        LEFT JOIN IMAGE I
+        ON R.R_NO = I.ORI_NO
+        LEFT JOIN REPLY RE
+        ON RE.ORI_NO = R.R_NO
+		WHERE R.R_NO = #{rNo}
+	
+	</select>
+	
+	<select id="selectWithImageAndPagingAndSearchAndReply" resultMap="recipeMap">
+	<![CDATA[
+		SELECT SSUB.* FROM
+        (SELECT SUB.*, ROWNUM AS RN FROM
+        (SELECT 
+		R.R_NO , R.M_EMAIL ,R.R_TITLE, R.R_CONTENT, R.R_DATE ,I.I_UUID, I.I_DIV, I.ORI_NO, I.I_NAME, I.I_DIR,
+        COUNT(RE.RE_NO)AS REPLYCNT
+		FROM RECIPE R 
+        LEFT JOIN (
+		SELECT * FROM IMAGE WHERE I_DIV = 'RCP') I
+		ON R.R_NO = I.ORI_NO 		
+		LEFT JOIN 	
+		(SELECT * FROM REPLY WHERE RE_DIV = 'RCP') 		
+		RE ON R.R_NO = RE.ORI_NO 
+    
+       ]]>     		
+     
+    <where>	
+	<if test = "keyword != null">
+		R.R_TITLE LIKE '%'||#{keyword}||'%'
+	</if>
+	</where>
+	
+	 GROUP BY R.R_NO,R.M_EMAIL ,R.R_TITLE, R.R_CONTENT, R.R_DATE ,I.I_UUID, I.I_DIV, I.ORI_NO, I.I_NAME, I.I_DIR
+    <![CDATA[
+		ORDER BY R.R_NO DESC)SUB )SSUB    
+        WHERE SSUB.RN > (#{pageNum}-1) * #{pageSize} AND SSUB.RN <= #{pageNum} * #{pageSize}          
+	]]>
+	
+	
+	</select>
+	
+	<select id="selectWithIngreAndFoodAndImageAndReplyRcp" resultMap="recipeMap">
+	
+		SELECT R.*, RI.*, F.* , I.*, RE.M_EMAIL AS REMEMAIL,RE.RE_NO,RE.ORI_NO,RE.RE_CONTENT, RE.RE_DATE, RE.RE_DIV,
+    	RE.RE_GROUP, RE.RE_INDENT FROM RECIPE R
+		LEFT JOIN RECIPE_INGREDIENT RI 
+		ON R.R_NO = RI.R_NO
+		LEFT JOIN FOOD F
+		ON RI.F_NO = F.F_NO
+        LEFT JOIN (SELECT * FROM IMAGE WHERE I_DIV = 'RCP') I
+        ON R.R_NO = I.ORI_NO
+        LEFT JOIN (SELECT * FROM REPLY WHERE RE_DIV = 'RCP')  RE
+        ON RE.ORI_NO = R.R_NO
+		WHERE R.R_NO = #{rNo}
+	
+	</select>
+	
+	<select id="selectByMEmailAndReplyCnt" resultMap="recipeMap">
+		<![CDATA[
+	SELECT SSUB.* FROM (SELECT SUB.*, ROWNUM AS RN FROM (SELECT R.R_NO , R.M_EMAIL ,R.R_TITLE, 
+	R.R_CONTENT, R.R_DATE ,I.I_UUID, I.I_DIV, I.ORI_NO, I.I_NAME, I.I_DIR, COUNT(RE.RE_NO)AS REPLYCNT 
+	FROM RECIPE R 
+	LEFT JOIN (
+	SELECT * FROM IMAGE WHERE I_DIV = 'RCP') I
+	ON R.R_NO = I.ORI_NO 
+	LEFT JOIN 
+	(SELECT * FROM REPLY WHERE RE_DIV = 'RCP') 
+	RE ON R.R_NO = RE.ORI_NO 
+	
+	
+	WHERE R.M_EMAIL = #{keyword}  
+	GROUP BY R.R_NO,R.M_EMAIL ,R.R_TITLE, 
+	R.R_CONTENT, R.R_DATE ,I.I_UUID, I.I_DIV, I.ORI_NO, I.I_NAME, I.I_DIR 
+	ORDER BY R.R_NO DESC)SUB 
+	)SSUB WHERE SSUB.RN > (#{pageNum}-1) * #{pageSize} AND SSUB.RN <= #{pageNum} * #{pageSize}  
+	
+	]]>
+	
+	</select>
+</mapper>

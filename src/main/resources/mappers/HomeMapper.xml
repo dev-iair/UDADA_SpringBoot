@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="org.ourapp.udada.mapper.HomeMapper">
+	<resultMap type="org.ourapp.udada.HotJournalDTO" id="hotJournalMap">
+			<id column="J_NO" property="jNo"/>
+			<result column="M_NAME" property="mName"/>
+			<result column="J_DATE" property="jDate"/>
+			<result column="L_CNT" property="lCnt"/>
+			<result column="J_CONTENT" property="jContent"/>
+	</resultMap>	
+	<resultMap type="org.ourapp.udada.EndSoonChallengeDTO" id="endSoonChallengeMap">
+			<id column="C_NO" property="cNo"/>
+			<result column="C_TITLE" property="cTitle"/>
+			<result column="D_DAY" property="dDay"/>
+			<result column="C_COUNT" property="cCount"/>
+	</resultMap>
+		<resultMap type="org.ourapp.udada.HighRateRecipeDTO" id="highRateRecipeMap">
+			<id column="R_NO" property="rNo"/>
+			<result column="R_TITLE" property="rTitle"/>
+			<result column="RG_AVG" property="rgAvg"/>
+	</resultMap>
+	
+	<select id="getHotJournal" resultMap="hotJournalMap">
+		SELECT * FROM
+		(SELECT A.J_NO, SUBSTR(A.J_CONTENT, 1,15)J_CONTENT, B.M_NAME, TO_CHAR(A.J_DATE,'YY.MM.DD')J_DATE, A.L_CNT FROM (JOURNAL)A
+		INNER JOIN
+		(SELECT M_NAME, M_EMAIL FROM MEMBER)B
+		ON A.M_EMAIL=B.M_EMAIL
+		WHERE J_DATE>CURRENT_DATE-7 AND A.L_CNT>0
+		ORDER BY A.L_CNT DESC, J_DATE DESC)
+		WHERE 6>ROWNUM
+	</select>
+	
+	<select id="endSoonChallenge" resultMap="endSoonChallengeMap">
+		SELECT * FROM
+		(SELECT * FROM
+		(SELECT C.C_NO, C.C_TITLE,(TRUNC(C.C_START)-TRUNC(CURRENT_DATE)+1)D_DAY, (C.C_TOTAL-CNT)C_COUNT
+		FROM CHALLENGE C
+		INNER JOIN 
+		(SELECT COUNT(*)CNT, C_NO FROM CHALLENGE_APPLY
+		GROUP BY C_NO) CA
+		ON C.C_NO = CA.C_NO
+		WHERE C.C_START+1 > CURRENT_DATE AND (C.C_TOTAL-CNT)>0)D
+		ORDER BY C_COUNT ASC, D_DAY ASC)E
+		WHERE 6>ROWNUM
+	</select>
+	
+	<select id="highRateRecipe" resultMap="highRateRecipeMap">
+		SELECT * FROM
+		(SELECT A.R_NO, A.R_TITLE, B.RG_AVG FROM (RECIPE)A
+		INNER JOIN
+		(SELECT R_NO, ROUND(AVG(RG_GRADE),2)RG_AVG 
+		FROM RECIPE_GRADE
+		GROUP BY R_NO)B
+		ON A.R_NO=B.R_NO
+		WHERE R_DATE>CURRENT_DATE-30
+		ORDER BY B.RG_AVG DESC)C
+		WHERE 6>ROWNUM
+	</select>
+	
+	<select id="getMyExcs" resultType="int">
+		SELECT NVL(SUM(C.KCAL),0) FROM
+		(SELECT ROUND((A.EM_TIME/5)*(B.E_KCAL))KCAL FROM EXERCISE_MY A
+		INNER JOIN (SELECT E_KCAL, E_NO FROM EXERCISE) B
+		ON A.E_NO=B.E_NO
+		WHERE TRUNC(A.EM_DATE)=TRUNC(CURRENT_DATE)
+		AND A.M_EMAIL=#{mEmail})C
+	</select>
+	
+	<select id="getBmi" resultType="double">
+		SELECT * FROM
+        (SELECT NVL(ROUND((MS_WEIGHT/((MS_HEIGHT)*(MS_HEIGHT)))*10000,1),0) FROM MEMBER_SPEC
+		WHERE TRUNC(MS_DATE)=TRUNC(CURRENT_DATE)
+		AND M_EMAIL=#{mEmail}
+        ORDER BY MS_DATE DESC)
+        WHERE ROWNUM=1
+	</select>
+</mapper>

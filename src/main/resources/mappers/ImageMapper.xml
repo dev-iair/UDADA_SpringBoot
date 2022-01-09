@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="org.ourapp.udada.mapper.ImageMapper">
+
+	<resultMap type="org.ourapp.udada.image.ImageDTO" id="imageMap">
+			<id column="I_UUID" property="iUuid"/>
+			<result column="ORI_NO" property="oriNo"/>
+			<result column="I_NAME" property="iName"/>
+			<result column="I_DIR" property="iDir"/>
+			<result column="I_DIV" property="iDiv"/>
+	</resultMap>
+	<insert id="insert">
+		INSERT INTO IMAGE(I_UUID, ORI_NO, I_NAME, I_DIR, I_DIV)
+		VALUES
+		( #{iUuid} , #{oriNo} , #{iName} , #{iDir} , #{iDiv} )
+	
+	</insert>
+	<delete id="delete">
+		DELETE FROM IMAGE WHERE ORI_NO = #{oriNo} AND I_DIV = #{iDiv}
+	</delete>
+	
+</mapper>

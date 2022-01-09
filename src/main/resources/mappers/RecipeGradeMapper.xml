@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="org.ourapp.udada.mapper.RecipeGradeMapper">
+
+	<resultMap type="org.ourapp.udada.recipe.RecipeGradeDTO" id="RecipeGradeMap">
+			<id column="RG_NO" property="rgNo"/>
+			<result column="R_NO" property="rNo"/>
+			<result column="M_EMAIL" property="mEmail"/>
+			<result column="RG_GRADE" property="rgGrade"/>
+	</resultMap>
+	
+	<insert id="insert">
+		INSERT INTO RECIPE_GRADE(RG_NO, R_NO, M_EMAIL , RG_GRADE) 
+		VALUES(SEQ_RG.NEXTVAL , #{rNo} , #{mEmail} , #{rgGrade})
+	</insert>
+	<delete id="delete">
+		DELETE FROM RECIPE_GRADE WHERE M_EMAIL = #{mEmail} AND R_NO =  #{rNo}	
+	</delete>
+	<select id="selectAvgByRNo" resultType="double">
+		SELECT ROUND(AVG(RG_GRADE),2) FROM RECIPE_GRADE WHERE R_NO= #{rNo}
+	</select>
+</mapper>

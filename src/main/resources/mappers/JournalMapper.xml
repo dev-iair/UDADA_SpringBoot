@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="org.ourapp.udada.mapper.JournalMapper">
+	
+	<resultMap type="org.ourapp.udada.journal.JournalDTO" id="journalMap">
+		<id column="J_NO" property="jNo"/>
+		<result column="M_EMAIL" property="mEmail"/>
+		<result column="J_CONTENT" property="jContent"/>
+		<result column="J_DATE" property="jDate"/>
+		<result column="L_CNT" property="lCnt"/>
+		<result column="M_NAME" property="mName"/>
+		<association property="imageDTO" resultMap="imageMap" />
+		<association property="replyDTO" resultMap="replyMap" />
+
+	</resultMap>
+	
+	<resultMap type="org.ourapp.udada.journal.LikeyouDTO" id="likeyouMap">
+ 		<id column="L_NO" property="lNo"/>
+ 		<result column="J_NO" property="jNo"/>
+ 		<result column="M_EMAIL" property="mEmail"/>
+ 	</resultMap>
+ 	
+ 	<resultMap type="org.ourapp.udada.image.ImageDTO" id="imageMap" >
+		  	<id column="I_UUID" property="iUuid"/>
+		 	<result column="ORI_NO" property="oriNo"/>
+			<result column="I_NAME" property="iName"/>
+			<result column="I_DIR" property="iDir"/>
+			<result column="I_DIV" property="iDiv"/>
+	</resultMap>
+	
+	<resultMap type="org.ourapp.udada.reply.ReplyDTO" id="replyMap">
+		<id column="RE_NO" property="reNo"/>
+		<result column="ORI_NO" property="oriNo"/>
+		<result column="M_EMAIL" property="mEmail"/>
+		<result column="RE_CONTENT" property="reContent"/>
+		<result column="RE_DATE" property="reDate"/>
+		<result column="RE_DIV" property="reDiv"/>
+		<result column="RE_GROUP" property="reGroup"/>
+		<result column="RE_INDENT" property="reIndent"/>
+		<result column="M_NAME" property="mName"/>
+	</resultMap>
+	
+	<select id="getList" resultMap="journalMap">
+		SELECT * FROM JOURNAL ORDER BY J_NO DESC
+	</select>
+	
+	<select id="myList" resultMap="journalMap">
+	<![CDATA[
+		SELECT * FROM JOURNAL
+		WHERE M_EMAIL='user01@gmail.com'
+		ORDER BY J_NO DESC
+	]]>
+	</select>
+	
+	<insert id="register">
+		INSERT INTO JOURNAL(J_NO, M_EMAIL, J_CONTENT)
+		VALUES(SEQ_JOURNAL.NEXTVAL, #{mEmail}, #{jContent})
+	</insert>
+	
+	<insert id="insertSelectKey">
+	<selectKey order="BEFORE" keyProperty="jNo" resultType="long">
+		SELECT SEQ_JOURNAL.NEXTVAL FROM DUAL
+	</selectKey>
+		INSERT INTO JOURNAL(J_NO, M_EMAIL, J_CONTENT )
+		VALUES (#{jNo}, #{mEmail} , #{jContent}) 
+	</insert>
+	
+	<select id="read" parameterType="long" resultMap="journalMap">
+		SELECT * FROM JOURNAL WHERE J_NO=#{jNo}
+	</select>
+	
+	<update id="update">
+		UPDATE JOURNAL
+		SET J_CONTENT=#{jContent}
+		WHERE J_NO=#{jNo}
+	</update>
+	
+	<delete id="delete">
+		DELETE FROM JOURNAL WHERE J_NO=#{jNo}
+	</delete>
+	
+	<select id="selectWithPaging" resultMap="journalMap">
+	<![CDATA[
+		SELECT * FROM(
+		SELECT 
+		/*+ INDEX_DESC(R PK_JOURNAL)*/
+		J.J_NO, J.M_EMAIL , J.J_CONTENT, J.J_DATE, ROWNUM RN 
+		FROM JOURNAL J
+		WHERE ROWNUM <= #{pageNum} * #{pageSize}
+		) SUB 
+		WHERE SUB.RN > (#{pageNum}-1) * #{pageSize} 
+			
+	]]>
+	</select>
+	
+	<select id="selectWithImageAndPagingAndSearch" resultMap="journalMap">
+	
+	<![CDATA[
+		SELECT SSUB.* FROM
+        (SELECT SUB.*, ROWNUM AS RN FROM
+        (SELECT 
+		J.J_NO , J.M_EMAIL, J.J_CONTENT, J.J_DATE, J.L_CNT ,I.*, M.M_NAME
+		FROM JOURNAL J 
+        LEFT JOIN (SELECT * FROM IMAGE WHERE I_DIV = 'JRN') I
+        ON J.J_NO = I.ORI_NO
+        INNER JOIN MEMBER M
+        ON J.M_EMAIL=M.M_EMAIL
+          
+       ]]>     		
+    <where>  
+	<if test = "keyword != null">
+		J.J_CONTENT LIKE '%'||#{keyword}||'%'
+	</if>
+	</where>   
+    <![CDATA[
+		ORDER BY J_NO DESC)SUB )SSUB    
+        WHERE SSUB.RN > (#{pageNum}-1) * #{pageSize} AND SSUB.RN <= #{pageNum} * #{pageSize}   
+	]]>
+	</select>
+	
+	<select id="selectWithIngreAndFoodAndImage" resultMap="journalMap" >
+		SELECT J.*, I.* FROM JOURNAL J
+        LEFT JOIN (SELECT * FROM IMAGE WHERE I_DIV = 'JRN') I
+        ON J.J_NO = I.ORI_NO
+		WHERE J.J_NO = #{jNo}
+	
+	</select>
+	
+	<select id="myselectWithImageAndPagingAndSearch" resultMap="journalMap">
+	
+	<![CDATA[
+		SELECT SSUB.* FROM
+        (SELECT SUB.*, ROWNUM AS RN FROM
+        (SELECT 
+		J.J_NO , J.M_EMAIL , J.J_CONTENT, J.J_DATE, J.L_CNT,I.*
+		FROM (SELECT * FROM JOURNAL WHERE M_EMAIL= #{loginUser})J
+        LEFT JOIN (SELECT * FROM IMAGE WHERE I_DIV = 'JRN') I
+        ON J.J_NO = I.ORI_NO
+       ]]>     		
+       
+    <![CDATA[
+		ORDER BY J_NO DESC)SUB )SSUB    
+        WHERE SSUB.RN > (#{pageNum}-1) * #{pageSize} AND SSUB.RN <= #{pageNum} * #{pageSize}  
+	]]>
+	</select>
+	
+	<select id="countAllWithSearch" resultType="int">
+		SELECT COUNT(J_NO) FROM JOURNAL
+	<where>  
+		<if test = "keyword != null">
+		J_CONTENT LIKE '%'||#{keyword}||'%'
+		</if>
+	</where>
+	</select>
+	
+	<select id="mycountAllWithSearch" resultType="int">
+	
+		SELECT COUNT(J_NO) FROM JOURNAL
+	<where>  
+		<if test = "keyword != null">
+		J_CONTENT LIKE '%'||#{keyword}||'%'
+		AND M_EMAIL = #{loginUser}
+		</if>
+	</where>
+
+	</select>
+ 
+	<insert id="createLike">
+ 		INSERT INTO LIKEYOU (L_NO, J_NO, M_EMAIL)
+ 		VALUES (SEQ_LIKEYOU.NEXTVAL, ${jNo}, #{mEmail})
+ 	</insert>
+ 	
+ 	<delete id="deleteLike">
+ 		DELETE FROM LIKEYOU
+ 		WHERE J_NO=${jNo} AND M_EMAIL=#{mEmail}
+ 	</delete>
+ 	
+ 	<select id="updateLike" resultMap="likeyouMap">
+ 		UPDATE JOURNAL
+ 		SET
+ 		L_CNT = (SELECT COUNT(*)
+ 		FROM LIKEYOU
+ 		WHERE J_NO = #{jNo})
+ 		WHERE J_NO = #{jNo}
+ 	</select>
+ 	
+ 	<select id="getLike" resultType="int">
+ 		SELECT COUNT(L_NO) FROM LIKEYOU WHERE J_NO = #{jNo} AND M_EMAIL = #{loginEmail}
+ 	</select>
+ 	
+ 	<select id="getLikeList" resultMap="likeyouMap">
+ 		SELECT COUNT(L_NO) FROM LIKEYOU WHERE J_NO = #{jNo} AND M_EMAIL = #{mEmail}
+ 	</select>
+ 	
+ 	<select id="replyList" resultMap="replyMap">
+		SELECT A.RE_NO, A.ORI_NO, A.M_EMAIL, A.RE_CONTENT, A.RE_DATE, B.M_NAME
+		FROM REPLY A
+        INNER JOIN  MEMBER B
+        ON A.M_EMAIL = B.M_EMAIL
+        WHERE A.ORI_NO=#{oriNo} AND A.RE_INDENT=0 AND A.RE_DIV=#{reDiv}
+		ORDER BY A.RE_DATE
+	</select>
+	
+	<select id="commentList" resultMap="replyMap">
+		SELECT A.RE_NO, A.ORI_NO, A.M_EMAIL, A.RE_CONTENT, A.RE_DATE, B.M_NAME
+		FROM REPLY A
+        INNER JOIN  MEMBER B
+        ON A.M_EMAIL = B.M_EMAIL
+        WHERE A.RE_NO!=#{reNo} AND A.RE_GROUP=#{reNo}
+		ORDER BY A.RE_DATE
+	</select>
+	
+	<select id="replyCount" resultMap="replyMap">
+		SELECT COUNT(RE_NO) FROM REPLY WHERE ORI_NO = #{oriNo}
+	</select>
+	
+</mapper>

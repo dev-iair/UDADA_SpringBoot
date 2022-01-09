@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="org.ourapp.udada.mapper.LikeyouMapper">
+
+	<resultMap type="org.ourapp.udada.journal.LikeyouDTO" id="likeyouMap">
+		<id column="L_NO" property="lNo"/>
+ 		<result column="J_NO" property="jNo"/>
+ 		<result column="M_EMAIL" property="mEmail"/>
+	</resultMap>
+	
+	<resultMap type="org.ourapp.udada.journal.JournalDTO" id="journalMap">
+		<id column="J_NO" property="jNo"/>
+		<result column="M_EMAIL" property="mEmail"/>
+		<result column="J_CONTENT" property="jContent"/>
+		<result column="J_DATE" property="jDate"/>
+		<result column="L_CNT" property="lCnt"/>
+	</resultMap>
+
+	<insert id="createLike">
+ 		INSERT INTO LIKEYOU (L_NO, J_NO, M_EMAIL)
+ 		VALUES (SEQ_LIKEYOU.NEXTVAL, ${jNo}, #{mEmail})
+ 	</insert>
+ 	
+ 	<delete id="deleteLike">
+ 		DELETE FROM LIKEYOU
+ 		WHERE J_NO=${jNo} AND M_EMAIL=#{mEmail}
+ 	</delete>
+ 	
+ 	<select id="updateLike">
+ 		UPDATE JOURNAL
+ 		SET
+ 		L_CNT = (SELECT COUNT(*)
+ 		FROM LIKEYOU
+ 		WHERE J_NO = #{jNo})
+ 		WHERE J_NO = #{jNo}
+ 	</select>
+ 	
+ 	<select id="getLike" resultType="int">
+ 		SELECT COUNT(L_NO) FROM LIKEYOU WHERE J_NO = #{jNo} AND M_EMAIL = #{mEmail}
+ 	</select>
+
+</mapper>

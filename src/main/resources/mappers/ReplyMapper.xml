@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="org.ourapp.udada.mapper.ReplyMapper">
+
+	<resultMap type="org.ourapp.udada.reply.ReplyDTO" id="replyMap">
+		<id column="RE_NO" property="reNo"/>
+		<result column="ORI_NO" property="oriNo"/>
+		<result column="M_EMAIL" property="mEmail"/>
+		<result column="RE_CONTENT" property="reContent"/>
+		<result column="RE_DATE" property="reDate"/>
+		<result column="RE_DIV" property="reDiv"/>
+		<result column="RE_GROUP" property="reGroup"/>
+		<result column="RE_INDENT" property="reIndent"/>
+	</resultMap>
+	
+	<insert id="insert">
+		INSERT INTO REPLY(RE_NO, ORI_NO, M_EMAIL, RE_CONTENT, RE_DIV, RE_GROUP, RE_INDENT)
+		VALUES(SEQ_REPLY.NEXTVAL, #{oriNo}, #{mEmail}, #{reContent}, #{reDiv}, SEQ_REPLY.CURRVAL, 0)
+	</insert>
+	
+	<insert id="commentinsert">
+		INSERT INTO REPLY(RE_NO, ORI_NO, M_EMAIL, RE_CONTENT, RE_DIV, RE_GROUP, RE_INDENT)
+		VALUES(SEQ_REPLY.NEXTVAL, #{oriNo}, #{mEmail}, #{reContent}, #{reDiv}, #{reGroup}, 1)
+	</insert>
+	
+	<delete id="delete">
+		DELETE FROM REPLY
+		<where>
+		<choose>
+		<when test="commentCheck==0">
+		RE_GROUP=#{reNo}
+		</when>
+		<otherwise>
+		RE_NO=#{reNo}
+		</otherwise>
+		</choose>
+		</where>
+	</delete>
+	
+	<update id="update">
+		UPDATE REPLY
+		SET RE_CONTENT = #{reContent}
+		WHERE RE_NO = #{reNo}
+	</update>
+	
+	<select id="replyList" parameterType="long">
+		SELECT * FROM REPLY
+		WHERE ORI_NO = #{oriNo}
+		ORDER BY RE_NO DESC
+	</select>
+	
+
+</mapper>

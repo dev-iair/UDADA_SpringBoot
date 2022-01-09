@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.ourapp.udada.mapper.FoodDetailMapper">
+
+	<resultMap type="org.ourapp.udada.food.FoodDetailDTO" id="foodDetailMap">
+	
+		<result column="F_NO" property="fNo"/>
+		<result column="F_NAME" property="fName"/>
+		<result column="F_MNCLASS" property="fMinclass"/>
+	
+	</resultMap>
+	
+	<select id="selectFname" resultMap = "foodDetailMap">
+		SELECT F_NO, F_NAME FROM FOOD WHERE F_MNCLASS LIKE #{fMinclass}
+	</select>
+
+</mapper>

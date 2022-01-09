@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="org.ourapp.udada.mapper.RecipeIngredientMapper">
+
+	<resultMap type="org.ourapp.udada.recipe.RecipeIngredientDTO" id="recipeIngredientMap">
+			<id column="RI_NO" property="riNo"/>
+			<result column="R_NO" property="rNo"/>
+			<result column="F_NO" property="fNo"/>
+			<result column="RI_AMOUNT" property="riAmount"/>
+	</resultMap>
+	
+
+	<insert id="insert">
+		INSERT INTO RECIPE_INGREDIENT(RI_NO, R_NO, F_NO, RI_AMOUNT)
+		VALUES (SEQ_RI.NEXTVAL, #{rNo}, #{fNo} , #{riAmount}) 
+	</insert>
+	
+	<delete id="deleteByRNo">
+		DELETE FROM RECIPE_INGREDIENT WHERE R_NO = #{rNo}
+	</delete>
+</mapper>

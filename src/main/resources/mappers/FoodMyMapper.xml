@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="org.ourapp.udada.mapper.FoodMyMapper">
+	<resultMap type="org.ourapp.udada.foodmy.FoodMyResultDTO" id="foodMyMap">
+			<result column="R_NO" property="rNo"/>
+			<result column="R_TITLE" property="rTitle"/>
+			<result column="RSKCAL" property="rsKcal"/>
+			<result column="RSCARBO" property="rsCarbo"/>
+			<result column="RSPROTEIN" property="rsProtein"/>
+			<result column="RSFAT" property="rsFat"/>
+			<result column="FM_NO" property="fmNo"/>
+			<result column="M_EMAIL" property="mEmail"/>
+			<result column="DAY" property="day"/>
+			<result column="FM_AMOUNT" property="fmAmount"/>
+			<result column="F_NO" property="fNo"/>
+			<result column="F_NAME" property="fName"/>
+			<result column="FSKCAL" property="fsKcal"/>
+			<result column="FSCARBO" property="fsCarbo"/>
+			<result column="FSPROTEIN" property="fsProtein"/>
+			<result column="FSFAT" property="fsFat"/>			
+	</resultMap>
+	<resultMap type="org.ourapp.udada.foodmy.FoodMyDayTotalDTO" id="foodMyDayTotalMap">
+			<result column="DAYTOTALKCAL" property="dayTotalKcal"/>
+			<result column="DAYTOTALCARBO" property="dayTotalCarbo"/>
+			<result column="DAYTOTALPROTEIN" property="dayTotalProtein"/>
+			<result column="DAYTOTALFAT" property="dayTotalFat"/>
+	</resultMap>
+	
+	<resultMap type="org.ourapp.udada.foodmy.FoodMyMemberSpecDTO" id="foodMyMemberSpecMap">
+			<association property="memberDTO" resultMap="memberMap" />
+			<association property="memberSpecDTO" resultMap="memberSpecMap" />
+	</resultMap>	
+	<resultMap type="org.ourapp.udada.member.MemberDTO" id="memberMap">
+		<id column="M_EMAIL" property="mEmail"/>
+		<result column="M_NAME" property="mName"/>
+		<result column="M_PW" property="mPw"/>
+		<result column="M_BIRTH" property="mBirth"/>
+		<result column="M_GENDER" property="mGender"/>
+		<result column="M_GRADE" property="mGrade"/>
+		<result column="M_MEAL" property="mMeal"/>
+		<result column="M_GOALTYPE" property="mGoaltype"/>
+	</resultMap>	
+	<resultMap type="org.ourapp.udada.member.MemberSpecDTO" id="memberSpecMap">
+		<id column="MS_NO" property="msNo"/>
+		<result column="M_EMAIL" property="mEmail"/>
+		<result column="MS_DATE" property="msDate"/>
+		<result column="MS_HEIGHT" property="msHeight"/>
+		<result column="MS_WEIGHT" property="msWeight"/>
+		<result column="MS_GOAL" property="msGoal"/>
+	</resultMap>	
+	
+	<select id="select" resultMap="foodMyMap">
+	<![CDATA[
+		SELECT 
+		V.R_NO, V.R_TITLE, 
+		FM.FM_AMOUNT*V.SUM_KCAL AS RSKCAL, 
+		FM.FM_AMOUNT*V.SUM_CARBO AS RSCARBO,
+		FM.FM_AMOUNT*V.SUM_PROTEIN AS RSPROTEIN,
+		FM.FM_AMOUNT*V.SUM_FAT AS RSFAT,
+		FM.FM_NO,FM.M_EMAIL, 
+		TO_CHAR(FM.FM_DATE , 'YYYY-MM-DD') AS DAY,
+		FM.FM_AMOUNT,
+		F.F_NO, F.F_NAME,
+		FM.FM_AMOUNT*F_KCAL AS FSKCAL, 
+		FM.FM_AMOUNT*F_CARBO AS FSCARBO,
+		FM.FM_AMOUNT*F_PROTEIN AS FSPROTEIN,
+		FM.FM_AMOUNT*F_FAT AS FSFAT
+		FROM FOOD_MY FM
+		LEFT JOIN V_RECIPE_SPEC V
+		ON FM.R_NO = V.R_NO
+		LEFT JOIN FOOD F
+		ON FM.F_NO = F.F_NO
+		WHERE FM.FM_DATE  = TO_DATE( #{day} , 'YYYY-MM-DD' )
+		AND FM.M_EMAIL = #{mEmail}
+		]]>
+	</select>
+	<update id="update">
+		UPDATE FOOD_MY SET FM_AMOUNT = #{fmAmount} WHERE FM_NO = #{fmNo}	
+	</update>
+	<delete id="delete">
+		DELETE FROM FOOD_MY WHERE FM_NO = #{fmNo}
+	</delete>
+	
+	<select id="selectDayTotal" resultMap="foodMyDayTotalMap">
+	<![CDATA[
+		SELECT 
+		SUM(NVL(SUB.RSKCAL,0) + NVL(SUB.FSKCAL,0)) AS DAYTOTALKCAL,
+		SUM(NVL(SUB.RSCARBO,0) + NVL(SUB.FSCARBO,0))  AS DAYTOTALCARBO,
+		SUM(NVL(SUB.RSPROTEIN,0) + NVL(SUB.FSPROTEIN,0))  AS DAYTOTALPROTEIN,
+		SUM(NVL(SUB.RSFAT,0) + NVL(SUB.FSFAT,0))  AS DAYTOTALFAT
+		FROM(
+		SELECT 
+		V.R_NO, V.R_TITLE, 
+		FM.FM_AMOUNT*V.SUM_KCAL AS RSKCAL, 
+		FM.FM_AMOUNT*V.SUM_CARBO AS RSCARBO,
+		FM.FM_AMOUNT*V.SUM_PROTEIN AS RSPROTEIN,
+		FM.FM_AMOUNT*V.SUM_FAT AS RSFAT,
+		FM.FM_NO,FM.M_EMAIL, 
+		TO_CHAR(FM.FM_DATE , 'YYYY-MM-DD') AS DAY,
+		FM.FM_AMOUNT,
+		F.F_NO, F.F_NAME,
+		FM.FM_AMOUNT*F_KCAL AS FSKCAL, 
+		FM.FM_AMOUNT*F_CARBO AS FSCARBO,
+		FM.FM_AMOUNT*F_PROTEIN AS FSPROTEIN,
+		FM.FM_AMOUNT*F_FAT AS FSFAT
+		FROM FOOD_MY FM
+		LEFT JOIN V_RECIPE_SPEC V
+		ON FM.R_NO = V.R_NO
+		LEFT JOIN FOOD F
+		ON FM.F_NO = F.F_NO
+		WHERE FM.FM_DATE  = TO_DATE( #{day} ,'YYYY-MM-DD')
+		AND FM.M_EMAIL = #{mEmail} ) SUB
+		]]>
+	</select>
+	<select id="selectMemberInfo" resultMap="foodMyMemberSpecMap">
+		SELECT M.M_EMAIL, MAX(M.M_NAME) AS M_NAME, MAX(M.M_PW) AS M_PW ,MAX(M.M_BIRTH) AS M_BIRTH ,
+        MAX(M.M_GENDER) AS M_GENDER ,MAX(M.M_GRADE) AS M_GRADE ,MAX(M.M_MEAL)AS M_MEAL ,MAX(M.M_GOALTYPE)AS M_GOALTYPE ,
+        MAX(MS.MS_NO) AS MS_NO, MAX(MS.MS_HEIGHT)AS MS_HEIGHT, MAX(MS.MS_WEIGHT)AS MS_WEIGHT , MAX(MS.MS_GOAL)AS MS_GOAL
+        FROM MEMBER M
+		LEFT JOIN MEMBER_SPEC MS
+		ON M.M_EMAIL = MS.M_EMAIL
+        GROUP BY M.M_EMAIL
+		HAVING M.M_EMAIL = #{mEmail}
+	</select>
+	<select id="selectDayTotalWithDay" resultMap="foodMyDayTotalMap">
+	<![CDATA[
+		SELECT 
+		SUM(NVL(SUB.RSKCAL,0) + NVL(SUB.FSKCAL,0)) AS DAYTOTALKCAL,
+		SUM(NVL(SUB.RSCARBO,0) + NVL(SUB.FSCARBO,0))  AS DAYTOTALCARBO,
+		SUM(NVL(SUB.RSPROTEIN,0) + NVL(SUB.FSPROTEIN,0))  AS DAYTOTALPROTEIN,
+		SUM(NVL(SUB.RSFAT,0) + NVL(SUB.FSFAT,0))  AS DAYTOTALFAT,
+		SUB.DAY
+		FROM(
+		SELECT 
+		V.R_NO, V.R_TITLE, 
+		FM.FM_AMOUNT*V.SUM_KCAL AS RSKCAL, 
+		FM.FM_AMOUNT*V.SUM_CARBO AS RSCARBO,
+		FM.FM_AMOUNT*V.SUM_PROTEIN AS RSPROTEIN,
+		FM.FM_AMOUNT*V.SUM_FAT AS RSFAT,
+		FM.FM_NO,FM.M_EMAIL, 
+		TO_CHAR(FM.FM_DATE , 'YYYY-MM-DD') AS DAY,
+		FM.FM_AMOUNT,
+		F.F_NO, F.F_NAME,
+		FM.FM_AMOUNT*F_KCAL AS FSKCAL, 
+		FM.FM_AMOUNT*F_CARBO AS FSCARBO,
+		FM.FM_AMOUNT*F_PROTEIN AS FSPROTEIN,
+		FM.FM_AMOUNT*F_FAT AS FSFAT
+		FROM FOOD_MY FM
+		LEFT JOIN V_RECIPE_SPEC V
+		ON FM.R_NO = V.R_NO
+		LEFT JOIN FOOD F
+		ON FM.F_NO = F.F_NO
+		WHERE FM.FM_DATE  = TO_DATE( #{day} ,'YYYY-MM-DD')
+		AND FM.M_EMAIL = #{mEmail} ) SUB
+		GROUP BY SUB.DAY
+	]]>
+	</select>
+	
+</mapper>

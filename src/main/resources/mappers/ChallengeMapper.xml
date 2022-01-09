@@ -1,0 +1,575 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+    
+<mapper namespace="org.ourapp.udada.mapper.ChallengeMapper">
+
+	<resultMap type="org.ourapp.udada.challenge.ChallengeDTO" id="challengeMap">
+			<id column="C_NO" property="cNo"/>
+			<result column="M_EMAIL" property="mEmail"/>
+			<result column="C_TITLE" property="cTitle"/>
+			<result column="C_CONTENT" property="cContent"/>
+			<result column="C_START" property="cStart"/>
+			<result column="C_FINISH" property="cFinish"/>
+			<result column="C_TOTAL" property="cTotal"/>
+	</resultMap>
+	
+	<resultMap type="org.ourapp.udada.challenge.ChallengeGoalDTO" id="challengeGoalMap">
+			<id column="CG_NO" property="cgNo"/>
+			<result column="C_NO" property="cNo"/>
+			<result column="E_NO" property="eNo"/>
+			<result column="CG_TIME" property="cgTime"/>
+	</resultMap>
+	
+	<resultMap type="org.ourapp.udada.challenge.ChallengeListDTO" id="challengeListMap">
+			<id column="C_NO" property="cNo"/>
+			<result column="C_TITLE" property="cTitle"/>
+			<result column="C_START" property="cStart"/>
+			<result column="C_FINISH" property="cFinish"/>
+			<result column="C_TOTAL" property="cTotal"/>
+			<result column="C_DATE" property="cDate"/>
+			<result column="CACNT" property="caCnt"/>
+	</resultMap>
+	
+	<resultMap type="org.ourapp.udada.challenge.ChallengeGlistDTO" id="challengeGlistMap">
+			<result column="E_NAME" property="eName"/>
+			<result column="C_NO" property="cNo"/>
+			<result column="E_NO" property="eNo"/>
+			<result column="CG_TIME" property="cgTime"/>
+	</resultMap>
+	
+	<resultMap type="org.ourapp.udada.challenge.ChallengeReadDTO" id="challengeReadMap">
+			<result column="C_NO" property="cNo"/>
+			<result column="C_TITLE" property="cTitle"/>
+			<result column="C_START" property="cStart"/>
+			<result column="C_FINISH" property="cFinish"/>
+			<result column="C_TOTAL" property="cTotal"/>
+			<result column="C_DATE" property="cDate"/>
+			<result column="C_CONTENT" property="cContent"/>
+			<result column="CA_CNT" property="caCnt"/>
+			<result column="M_EMAIL" property="mEmail"/>
+			<result column="CHECKEND" property="checkEnd"/>
+	</resultMap>
+	
+	<resultMap type="org.ourapp.udada.challenge.ChallengeReadGoalDTO" id="challengeReadGoalMap">
+			<result column="E_NAME" property="eName"/>
+			<result column="C_NO" property="cNo"/>
+			<result column="E_NO" property="eNo"/>
+			<result column="CG_TIME" property="cgTime"/>
+			<result column="E_KCAL" property="eKcal"/>
+	</resultMap>
+	
+	<resultMap type="org.ourapp.udada.challenge.MyChallengeProceedDTO" id="myChallengeProceedMap">
+			<id column="C_NO" property="cNo"/>
+			<result column="M_EMAIL" property="mEmail"/>
+			<result column="C_TITLE" property="cTitle"/>
+			<result column="C_START" property="cStart"/>
+			<result column="C_FINISH" property="cFinish"/>
+			<result column="PROGRESS" property="progress"/>
+	</resultMap>
+	
+	<resultMap type="org.ourapp.udada.challenge.MyChallengeApplyDTO" id="myChallengeApplyMap">
+			<id column="C_NO" property="cNo"/>
+			<result column="M_EMAIL" property="mEmail"/>
+			<result column="C_TITLE" property="cTitle"/>
+			<result column="C_START" property="cStart"/>
+			<result column="C_FINISH" property="cFinish"/>
+			<result column="DDAY" property="dDay"/>
+	</resultMap>
+
+	<resultMap type="org.ourapp.udada.challenge.MyChallengeEndDTO" id="myChallengeEndMap">
+			<id column="C_NO" property="cNo"/>
+			<result column="M_EMAIL" property="mEmail"/>
+			<result column="C_TITLE" property="cTitle"/>
+			<result column="C_START" property="cStart"/>
+			<result column="C_FINISH" property="cFinish"/>
+	</resultMap>
+	
+	<resultMap type="org.ourapp.udada.challenge.MyChallengeInfoDTO" id="myChallengeInfoMap">
+			<result column="C_NO" property="cNo"/>
+			<result column="C_TITLE" property="cTitle"/>
+			<result column="C_START" property="cStart"/>
+			<result column="C_FINISH" property="cFinish"/>
+			<result column="CHAR_START" property="charStart"/>
+			<result column="CHAR_FINISH" property="charFinish"/>
+			<result column="PROGRESS" property="progress"/>
+			<result column="TOTALDATE" property="totalDate"/>
+			<result column="PROCDATE" property="procDate"/>
+			<result column="MEMCNT" property="memCnt"/>
+	</resultMap>
+	
+	<resultMap type="org.ourapp.udada.challenge.MyChallengeSuccessCntMDTO" id="myChallengeSuccessCntMap">
+			<result column="M_EMAIL" property="mEmail"/>				
+			<result column="SUCCESS" property="success"/>
+			<result column="M_NAME" property="mName"/>			
+	</resultMap>
+	
+	<resultMap type="org.ourapp.udada.challenge.MyChallengeSuccessCntDDTO" id="myChallengeSuccessDayMap">
+			<result column="PERIOD" property="period"/>				
+			<result column="SUCCESS" property="success"/>		
+	</resultMap>
+	
+	<resultMap type="org.ourapp.udada.challenge.MyChallengeGetTalkDTO" id="myChallengeGetTalkMap">
+			<result column="RE_NO" property="reNo"/>				
+			<result column="M_NAME" property="mName"/>		
+			<result column="RE_CONTENT" property="reContent"/>				
+			<result column="REDATE" property="reDate"/>	
+			<result column="M_EMAIL" property="mEmail"/>	
+	</resultMap>
+	
+	<resultMap type="org.ourapp.udada.challenge.MyChallengeGetMySuccessDayDTO" id="myChallengeGetMySuccessDayMap">
+			<result column="TITLE" property="title"/>				
+			<result column="PERIOD" property="start"/>		
+			<result column="COLOR" property="color"/>				
+	</resultMap>
+	
+	
+	<insert id="register">
+		<selectKey keyProperty="cNo" resultType="long" order="AFTER">
+			SELECT SEQ_CHALLENGE.CURRVAL FROM DUAL
+		</selectKey>
+		INSERT INTO CHALLENGE ( C_NO, M_EMAIL, C_TITLE, C_CONTENT, C_START, C_FINISH, C_TOTAL )
+		VALUES ( SEQ_CHALLENGE.NEXTVAL, #{mEmail} ,#{cTitle}, #{cContent}, #{cStart}, #{cFinish}, #{cTotal} )
+	</insert>
+	
+	<insert id="registerApply">
+		INSERT INTO CHALLENGE_APPLY ( CA_NO, C_NO, M_EMAIL, CA_ING, CA_MEMO )
+		VALUES ( SEQ_CA.NEXTVAL, #{cNo}, #{mEmail}, 'MASTER', 'MASTER' )
+	</insert>
+	
+	<insert id="registerGoal">
+		INSERT INTO CHALLENGE_GOAL ( CG_NO, C_NO, E_NO, CG_TIME )
+		VALUES ( SEQ_CG.NEXTVAL, #{cNo}, #{eNo}, #{cgTime} ) 
+	</insert>
+	
+	<select id="loadList" resultMap="challengeListMap">
+        SELECT * FROM
+        (SELECT C.*, ROWNUM RN
+        FROM
+        (SELECT A.C_NO, A.C_TITLE, A.C_START, A.C_FINISH, A.C_TOTAL, A.C_DATE, B.CACNT
+		FROM CHALLENGE A
+        INNER JOIN (SELECT C_NO, COUNT(*) CACNT FROM CHALLENGE_APPLY GROUP BY C_NO) B
+		ON A.C_NO = B.C_NO
+		 <where>
+    		<if test='keyword != null and keyword != ""'>
+         		(A.C_TITLE LIKE '%'||#{keyword}||'%' OR A.C_CONTENT LIKE '%'||#{keyword}||'%')
+    		</if>
+    		<if test='excsResult != null'>
+    			AND A.C_NO IN
+        		<foreach item="item" index="index" collection="excsResult" open="(" separator="," close=")">
+					#{item}
+  				</foreach>
+    		</if>
+				<choose>
+    				<when test='period != null and period != ""'>
+      				AND (A.C_START>=#{start} AND #{finish}>=A.C_Finish)
+    				</when>
+    				<otherwise>
+      				AND (A.C_START+1)>=CURRENT_DATE
+   					</otherwise>
+  				</choose>
+  				AND A.C_TOTAL>B.CACNT
+		</where>
+        ORDER BY A.C_START) C)
+        WHERE RN BETWEEN #{startNo} AND #{endNo}
+	</select>
+	
+		<select id="getListSize" resultType="int">
+
+        SELECT COUNT(*)
+		FROM CHALLENGE A
+        INNER JOIN (SELECT C_NO, COUNT(*) CACNT FROM CHALLENGE_APPLY GROUP BY C_NO) B
+		ON A.C_NO = B.C_NO
+		 <where>
+    		<if test='keyword != null and keyword != ""'>
+         		(A.C_TITLE LIKE '%'||#{keyword}||'%' OR A.C_CONTENT LIKE '%'||#{keyword}||'%')
+    		</if>
+    		<if test='excsResult != null'>
+    			AND A.C_NO IN
+        		<foreach item="item" index="index" collection="excsResult" open="(" separator="," close=")">
+					#{item}
+  				</foreach>
+    		</if>
+				<choose>
+    				<when test='period != null and period != ""'>
+      				AND (A.C_START>=#{start} AND #{finish}>=A.C_Finish)
+    				</when>
+    				<otherwise>
+      				AND (A.C_START+1)>=CURRENT_DATE
+   					</otherwise>
+  				</choose>
+  				AND A.C_TOTAL>B.CACNT
+		</where>
+
+	</select>
+	
+	<select id="loadGlist" resultMap="challengeGlistMap">
+		SELECT A.C_NO, A.E_NO, A.CG_TIME, B.E_NAME
+		FROM CHALLENGE_GOAL A
+		INNER JOIN EXERCISE B
+		ON A.E_NO = B.E_NO
+		WHERE C_NO = #{cNo}
+	</select>
+	
+	<select id="read" resultMap="challengeReadMap">
+		SELECT A.C_NO, A.M_EMAIL, A.C_TITLE, A.C_START, A.C_FINISH, A.C_DATE, A.C_TOTAL, A.C_CONTENT, B.CA_CNT, FLOOR(CURRENT_DATE-A.C_START)CHECKEND
+		FROM CHALLENGE A
+		INNER JOIN (SELECT C_NO, COUNT(*) CA_CNT FROM CHALLENGE_APPLY GROUP BY C_NO) B
+		ON A.C_NO= B.C_NO
+		WHERE A.C_NO=#{cNo}
+	</select>
+	
+	<select id="readGoal" resultMap="challengeReadGoalMap">
+		SELECT A.C_NO, A.E_NO, A.CG_TIME, B.E_NAME, B.E_KCAL
+		FROM CHALLENGE_GOAL A
+		INNER JOIN EXERCISE B
+		ON A.E_NO = B.E_NO
+		WHERE C_NO = #{cNo}
+	</select>
+	
+	<select id="readSuccessGoal" resultMap="challengeReadGoalMap">
+		SELECT E_NO, SUM(CG_TIME)CG_TIME
+		FROM CHALLENGE_GOAL
+		WHERE C_NO = #{cNo}
+		GROUP BY E_NO
+	</select>
+	
+	<insert id="challengeApply">
+		INSERT INTO CHALLENGE_APPLY ( CA_NO, C_NO, M_EMAIL, CA_ING, CA_MEMO )
+		VALUES ( SEQ_CA.NEXTVAL, #{cNo}, #{sEmail}, 'APPLY', '' )
+	</insert>
+	
+	<update id="modify">
+		UPDATE CHALLENGE 
+		SET C_TITLE=#{cTitle}, C_CONTENT=#{cContent}, C_START=#{cStart}, C_FINISH=#{cFinish}, C_TOTAL=#{cTotal}
+		WHERE C_NO=#{cNo}
+	</update>
+	
+	<delete id="delGoal">
+		DELETE FROM CHALLENGE_GOAL
+		WHERE C_NO=#{cNo}
+	</delete>
+	
+	<insert id="modifyGoal">
+		INSERT INTO CHALLENGE_GOAL ( CG_NO, C_NO, E_NO, CG_TIME )
+		VALUES ( SEQ_CG.NEXTVAL, #{cNo}, #{eNo}, #{cgTime} ) 
+	</insert>
+	
+	<delete id="delete">
+		DELETE FROM CHALLENGE
+		WHERE C_NO=#{cNo}
+	</delete>
+	
+	<select id="searchExcs" resultMap="challengeReadGoalMap">
+		<![CDATA[
+		SELECT ROWNUM, E_NO, E_NAME, E_KCAL FROM EXERCISE
+		WHERE E_NAME LIKE '%'||#{eName}||'%' AND ROWNUM <= 5
+		]]>
+	</select>
+	
+	<select id="applyCheck" resultType="int">
+		SELECT COUNT(*) FROM CHALLENGE_APPLY
+		WHERE M_EMAIL=#{sEmail} AND C_NO=#{cNo}
+	</select>
+	
+	<delete id="challengeCancel">
+		DELETE FROM CHALLENGE_APPLY
+		WHERE M_EMAIL=#{sEmail} AND C_NO=#{cNo}
+	</delete>
+	
+	<select id="eNameSearch" resultType="int" >
+		SELECT A.C_NO FROM (CHALLENGE_GOAL)A
+		INNER JOIN
+		(SELECT E_NO FROM EXERCISE
+		WHERE E_NAME LIKE '%'|| #{exercise} ||'%')B
+		ON A.E_NO=B.E_NO
+		GROUP BY C_NO
+	</select>
+	
+	<select id="proceedList" resultMap="myChallengeProceedMap" >
+		<![CDATA[
+		SELECT C.* FROM
+        (SELECT A.C_NO, B.M_EMAIL, B.C_TITLE, B.C_START, B.C_FINISH, B.PROGRESS
+        FROM (CHALLENGE_APPLY)A
+        INNER JOIN
+        (SELECT C_NO, M_EMAIL, C_TITLE, C_START, C_FINISH, ROUND((CURRENT_DATE-C_START)/(C_FINISH-C_START+1)*100)PROGRESS
+		FROM CHALLENGE
+		WHERE C_START<CURRENT_DATE AND CURRENT_DATE<C_FINISH+1)B
+        ON A.C_NO=B.C_NO
+        WHERE A.M_EMAIL=#{sEmail}
+		ORDER BY B.C_START)C
+        WHERE ROWNUM<=6
+		]]>
+	</select>
+	
+	<select id="applyList" resultMap="myChallengeApplyMap" >
+		<![CDATA[
+		SELECT C.* FROM
+        (SELECT A.C_NO, B.M_EMAIL, B.C_TITLE, B.C_START, B.C_FINISH, B.DDAY
+        FROM (CHALLENGE_APPLY)A
+        INNER JOIN
+        (SELECT C_NO, M_EMAIL, C_TITLE, C_START, C_FINISH, CEIL(C_START-CURRENT_DATE)DDAY
+		FROM CHALLENGE
+		WHERE C_START>CURRENT_DATE)B
+        ON A.C_NO=B.C_NO
+        WHERE A.M_EMAIL=#{sEmail}
+		ORDER BY B.C_START)C
+        WHERE ROWNUM<=6
+		]]>
+	</select>
+	
+	<select id="endList" resultMap="myChallengeEndMap">
+		<![CDATA[
+        SELECT C.* FROM
+        (SELECT A.C_NO, B.M_EMAIL, B.C_TITLE, B.C_START, B.C_FINISH
+        FROM (CHALLENGE_APPLY)A
+        INNER JOIN
+        (SELECT C_NO, M_EMAIL, C_TITLE, C_START, C_FINISH
+		FROM CHALLENGE
+		WHERE C_FINISH<CURRENT_DATE-1)B
+        ON A.C_NO=B.C_NO
+        WHERE A.M_EMAIL=#{sEmail}
+		ORDER BY B.C_FINISH DESC)C
+        WHERE ROWNUM<=6
+		]]>
+	</select>
+
+	<select id="myChallengeInfo" resultMap="myChallengeInfoMap" >
+		SELECT A.C_NO, A.C_TITLE, A.C_START, A.C_FINISH, TO_CHAR(A.C_START,'YYYY-MM-DD')CHAR_START, TO_CHAR(A.C_FINISH+1,'YYYY-MM-DD')CHAR_FINISH,
+        ROUND((CEIL(CURRENT_DATE-A.C_START))/(A.C_FINISH-A.C_START+1)*100)PROGRESS, (A.C_FINISH-A.C_START+1)TOTALDATE, CEIL(CURRENT_DATE-A.C_START)PROCDATE, B.MEMCNT
+		FROM (CHALLENGE)A
+        INNER JOIN
+        (SELECT COUNT(*)MEMCNT, C_NO
+        FROM CHALLENGE_APPLY
+        GROUP BY C_NO)B
+        ON A.C_NO=B.C_NO
+		WHERE A.C_NO=#{cNo}
+	</select>
+
+	<select id="getMemSuccess" resultMap="myChallengeSuccessCntMap" >
+		SELECT C.M_EMAIL, C.SUCCESS, D.M_NAME
+        FROM
+        (SELECT A.M_EMAIL,NVL(B.SUCCESS,0)SUCCESS
+		FROM 
+		(SELECT M_EMAIL FROM CHALLENGE_APPLY
+		WHERE C_NO=#{cNo})A,
+		(SELECT M_EMAIL, COUNT(*)SUCCESS FROM (SELECT M_EMAIL, EM_DATE, COUNT(*)CNT FROM 	
+		(SELECT M_EMAIL, EM_DATE, E_NO, SUM(EM_TIME)EM_TIME FROM
+        (SELECT M_EMAIL, TO_CHAR(EM_DATE,'YY-MM-DD')EM_DATE, E_NO, EM_TIME FROM EXERCISE_MY
+        WHERE (EM_DATE BETWEEN #{cStart} AND #{cFinish}+1)
+		AND (M_EMAIL IN (SELECT M_EMAIL FROM CHALLENGE_APPLY WHERE C_NO=#{cNo})))       
+        GROUP BY M_EMAIL, EM_DATE, E_NO)
+		<where>
+		<foreach item="goal" index="index" collection="goalList" open="(" separator="OR" close=")">
+			(E_NO=#{goal.eNo} AND EM_TIME>=#{goal.cgTime})
+		</foreach>
+		</where>
+		GROUP BY M_EMAIL, EM_DATE)
+		WHERE CNT>=#{goalCnt}
+		GROUP BY M_EMAIL)B
+		WHERE A.M_EMAIL=B.M_EMAIL(+)
+		ORDER BY B.SUCCESS DESC NULLS LAST)C
+        INNER JOIN (MEMBER)D
+        ON C.M_EMAIL=D.M_EMAIL
+	</select>
+	
+		<select id="getDaySuccess" resultMap="myChallengeSuccessDayMap" >
+		SELECT A.PERIOD, C.SUCCESS
+		FROM
+		(SELECT TO_CHAR(#{cStart}-1+LEVEL, 'YY-MM-DD')PERIOD
+		FROM DUAL
+		CONNECT BY #{procDate} >= LEVEL)A
+		,
+		(SELECT B.EM_DATE,NVL(B.SUCCESS,0)SUCCESS
+		FROM 
+		(SELECT EM_DATE, COUNT(*)SUCCESS FROM 
+		(SELECT M_EMAIL, EM_DATE, COUNT(*)CNT FROM 	
+		(SELECT M_EMAIL, EM_DATE, E_NO, SUM(EM_TIME)EM_TIME FROM
+        (SELECT M_EMAIL, TO_CHAR(EM_DATE,'YY-MM-DD')EM_DATE, E_NO, EM_TIME FROM EXERCISE_MY
+        WHERE (EM_DATE BETWEEN #{cStart} AND #{cFinish}+1)
+		AND (M_EMAIL IN (SELECT M_EMAIL FROM CHALLENGE_APPLY WHERE C_NO=#{cNo})))       
+        GROUP BY M_EMAIL, EM_DATE, E_NO)
+		<where>
+		<foreach item="goal" index="index" collection="goalList" open="(" separator="OR" close=")">
+			(E_NO=#{goal.eNo} AND EM_TIME>=#{goal.cgTime})
+		</foreach>
+		</where>
+		GROUP BY M_EMAIL, EM_DATE)
+		WHERE CNT>=#{goalCnt}
+		GROUP BY EM_DATE)B)C
+		WHERE A.PERIOD=C.EM_DATE(+)
+		ORDER BY A.PERIOD ASC
+	</select>
+	
+	<select id="getTodaySuccess" resultType="int">
+		SELECT COUNT(*) FROM
+		(SELECT COUNT(*)CNT FROM
+		(SELECT M_EMAIL, EM_DATE, E_NO, SUM(EM_TIME)EM_TIME FROM
+        (SELECT M_EMAIL, TO_CHAR(EM_DATE,'YY-MM-DD')EM_DATE, E_NO, EM_TIME FROM EXERCISE_MY
+        WHERE M_EMAIL=#{mEmail} AND EM_DATE>TRUNC(CURRENT_DATE) AND TRUNC(CURRENT_DATE)+1>EM_DATE)
+        GROUP BY M_EMAIL, EM_DATE, E_NO)
+		WHERE
+		<foreach item="goal" index="index" collection="goalList" open="(" separator="OR" close=")">
+			(E_NO=#{goal.eNo} AND EM_TIME>=#{goal.cgTime})
+		</foreach>
+		)
+		WHERE CNT>=#{goalCnt}
+	</select>
+	
+	<insert id="talkReg">
+		INSERT INTO REPLY(RE_NO, ORI_NO, M_EMAIL, RE_CONTENT, RE_DIV, RE_GROUP, RE_INDENT)
+		VALUES(SEQ_REPLY.NEXTVAL, #{oriNo}, #{mEmail}, #{reContent}, 'CHG',
+		<choose>
+    	<when test="groupNo==0">SEQ_REPLY.CURRVAL</when>
+  		<otherwise>#{groupNo}</otherwise>
+		</choose> 
+		, #{reIndent})
+	</insert>
+	
+	<select id="getTalk" resultMap="myChallengeGetTalkMap">
+		SELECT A.RE_NO, B.M_NAME, A.RE_CONTENT, A.M_EMAIL
+		, CASE WHEN TRUNC(A.RE_DATE)=TRUNC(CURRENT_DATE) THEN
+		TO_CHAR(A.RE_DATE, 'HH24:MI')
+		ELSE
+		TO_CHAR(A.RE_DATE, 'YY.MM.DD')
+		END AS REDATE
+		FROM (REPLY)A
+		INNER JOIN
+		(MEMBER)B
+		ON A.M_EMAIL = B.M_EMAIL
+		WHERE A.RE_DIV='CHG' AND A.RE_INDENT=0 AND A.ORI_NO=#{cNo}
+		ORDER BY A.RE_DATE
+	</select>
+	
+	<select id="getTalkReply" resultMap="myChallengeGetTalkMap">
+		SELECT A.RE_NO, B.M_NAME, A.RE_CONTENT, A.M_EMAIL
+		, CASE WHEN TRUNC(A.RE_DATE)=TRUNC(CURRENT_DATE) THEN
+		TO_CHAR(A.RE_DATE, 'HH24:MI')
+		ELSE
+		TO_CHAR(A.RE_DATE, 'YY.MM.DD')
+		END AS REDATE
+		FROM (REPLY)A
+		INNER JOIN
+		(MEMBER)B
+		ON A.M_EMAIL = B.M_EMAIL
+		WHERE A.RE_NO!=#{reNo} AND A.RE_GROUP=#{reNo}
+		ORDER BY A.RE_DATE
+	</select>
+	
+	<delete id="talkDel">
+		DELETE FROM REPLY
+		<where>
+		<choose>
+		<when test="checkTalk==0">
+		RE_GROUP=#{reNo}
+		</when>
+		<otherwise>
+		RE_NO=#{reNo}
+		</otherwise>
+		</choose>
+		</where>
+	</delete>
+	
+	<update id="editTalk">
+	UPDATE REPLY
+	SET RE_CONTENT=#{reContent}
+	WHERE RE_NO=#{reNo}
+	</update>
+	
+	<select id="getMySuccessDay" resultMap="myChallengeGetMySuccessDayMap">
+		SELECT A.PERIOD,
+        CASE WHEN C.SUCCESS=1 THEN
+		'성공'
+		WHEN A.PERIOD=TO_CHAR(CURRENT_DATE,'YYYY-MM-DD') THEN '진행중'
+		ELSE'실패'END AS TITLE,
+        CASE WHEN C.SUCCESS=1 THEN
+		'GREEN'
+		WHEN A.PERIOD=TO_CHAR(CURRENT_DATE,'YYYY-MM-DD') THEN 'ORANGE'
+		ELSE'RED'END AS COLOR
+		FROM
+		(SELECT TO_CHAR(#{cStart}-1+LEVEL, 'YYYY-MM-DD')PERIOD
+		FROM DUAL
+		CONNECT BY #{procDate} >= LEVEL)A
+		,
+		(SELECT B.EM_DATE,NVL(B.SUCCESS,0)SUCCESS
+		FROM (SELECT EM_DATE, COUNT(*)SUCCESS FROM 
+
+		(SELECT EM_DATE, COUNT(*)CNT FROM 	
+		(SELECT EM_DATE, E_NO, SUM(EM_TIME)EM_TIME FROM
+        (SELECT TO_CHAR(EM_DATE,'YYYY-MM-DD')EM_DATE, E_NO, EM_TIME FROM EXERCISE_MY
+        WHERE (EM_DATE BETWEEN #{cStart} AND #{cFinish}+1)
+		AND (M_EMAIL = #{mEmail}))       
+        GROUP BY EM_DATE, E_NO)
+		<where>
+		<foreach item="goal" index="index" collection="goalList" open="(" separator="OR" close=")">
+			(E_NO=#{goal.eNo} AND EM_TIME>=#{goal.cgTime})
+		</foreach>
+		</where>
+		GROUP BY EM_DATE)
+
+		WHERE CNT>=#{goalCnt}
+		GROUP BY EM_DATE)B)C
+		WHERE A.PERIOD=C.EM_DATE(+)
+		ORDER BY A.PERIOD ASC
+	</select>
+	
+	<select id="checkMem" resultType="int" >
+		SELECT COUNT(*) FROM CHALLENGE_APPLY
+		WHERE C_NO=#{cNo} AND M_EMAIL=#{mEmail}
+	</select>
+	
+	<select id="loadMyList" resultMap="challengeListMap">
+        SELECT * FROM
+        (SELECT C.*, ROWNUM RN
+        FROM
+        (SELECT A.C_NO, A.C_TITLE, A.C_START, A.C_FINISH, A.C_TOTAL, A.C_DATE, B.CACNT
+		FROM CHALLENGE A
+        INNER JOIN (SELECT C_NO, COUNT(*) CACNT FROM CHALLENGE_APPLY GROUP BY C_NO) B
+		ON A.C_NO = B.C_NO
+		 <where>
+		 		A.C_NO IN (SELECT C_NO FROM CHALLENGE_APPLY WHERE M_EMAIL=#{mEmail})
+    		<if test='keyword != null and keyword != ""'>
+         		AND (A.C_TITLE LIKE '%'||#{keyword}||'%' OR A.C_CONTENT LIKE '%'||#{keyword}||'%')
+    		</if>
+    		<if test="excsResult != null">
+    			AND A.C_NO IN
+        		<foreach item="item" index="index" collection="excsResult" open="(" separator="," close=")">
+					#{item}
+  				</foreach>
+    		</if>
+				<choose>
+    				<when test='period != null and period != ""'>
+      				AND (A.C_START>=#{start} AND #{finish}>=A.C_Finish)
+    				</when>
+  				</choose>
+		</where>
+        ORDER BY A.C_START DESC) C)
+        WHERE RN BETWEEN #{startNo} AND #{endNo}
+	</select>
+	
+		<select id="getMyListSize" 	resultType="int">
+        SELECT COUNT(*)
+		FROM CHALLENGE A
+		 <where>
+		 		A.C_NO IN (SELECT C_NO FROM CHALLENGE_APPLY WHERE M_EMAIL=#{mEmail})
+    		<if test='keyword != null and keyword != ""'>
+         		AND (A.C_TITLE LIKE '%'||#{keyword}||'%' OR A.C_CONTENT LIKE '%'||#{keyword}||'%')
+    		</if>
+    		<if test="excsResult != null">
+    			AND A.C_NO IN
+        		<foreach item="item" index="index" collection="excsResult" open="(" separator="," close=")">
+					#{item}
+  				</foreach>
+    		</if>
+				<choose>
+    				<when test='period != null and period != ""'>
+      				AND (A.C_START>=#{start} AND #{finish}>=A.C_Finish)
+    				</when>
+  				</choose>
+		</where>
+
+	</select>
+	
+</mapper>

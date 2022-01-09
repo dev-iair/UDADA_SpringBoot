@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="org.ourapp.udada.mapper.ExerciseMapper"> <!-- recipeMapper.java가 부모임 -->
+
+	<resultMap type="org.ourapp.udada.exercise.ExerciseDTO" id="exerciseMap">
+			<id column="E_NO" property="eNo"/>
+			<result column="E_NAME" property="eName"/>
+			<result column="E_STR" property="eStr"/>
+			<result column="E_KCAL" property="eKcal"/>
+	</resultMap>
+		
+	<resultMap type="org.ourapp.udada.exercise.Exercise_myDTO" id="myexerciseMap">
+			<id column="EM_NO" property="emNo"/>
+			<result column="M_EMAIL" property="mEmail"/>
+			<result column="EM_DATE" property="emDate"/>
+			<result column="E_NO" property="eNo"/>
+			<result column="EM_TIME" property="emTime"/>
+			<result column="E_NAME" property="eName"/>
+			<result column="E_KCAL" property="eKcal"/>
+	</resultMap>
+	
+	<resultMap type="org.ourapp.udada.exercise.ExerciseGetMyListDTO" id="exerciseGetMyListMap">
+			<result column="TOTAL_KCAL" property="kcal"/>
+			<result column="EM_DATE" property="start"/>
+	</resultMap>
+	<select id="getList" resultMap="exerciseMap">
+		SELECT * FROM EXERCISE ORDER BY E_NO ASC
+	</select>
+	
+	<select id="read" parameterType="long" resultMap="exerciseMap">
+		SELECT * FROM EXERCISE WHERE E_NO = #{eNo}
+	</select>
+	
+	<select id="myList" parameterType="String" resultMap="myexerciseMap"><!-- parameterType  -->
+		SELECT D.* FROM
+		(SELECT C.*, ROWNUM AS RN FROM
+		(SELECT A.EM_NO, A.M_EMAIL, A.EM_DATE, B.E_NAME, B.E_KCAL, A.E_NO, A.EM_TIME
+		FROM EXERCISE_MY A
+		INNER JOIN EXERCISE B
+		ON A.E_NO = B.E_NO
+		<where>  
+		A.M_EMAIL = #{loginUser}
+	    <if test = "keyword != null || keyword!=''">
+		AND B.E_NAME LIKE '%'||#{keyword}||'%'
+	    </if>
+	    </where>
+		ORDER BY A.EM_DATE DESC)C)D
+		<![CDATA[
+		WHERE D.RN > (#{pageNum}-1) * #{pageSize} AND D.RN <= #{pageNum} * #{pageSize}         
+		]]>
+	</select>
+	
+	<select id="countAllMylist" resultType="int">
+		SELECT COUNT(*)
+		FROM EXERCISE_MY A
+		INNER JOIN EXERCISE B
+		ON A.E_NO = B.E_NO
+		<where>  
+		A.M_EMAIL = #{loginUser}
+	    <if test = "keyword != null || keyword!=''">
+		AND B.E_NAME LIKE '%'||#{keyword}||'%'
+	    </if>
+	    </where>
+	</select>
+	
+	<select id="myget" parameterType="long" resultMap="exerciseMap">
+		SELECT * FROM EXERCISE WHERE E_NO = #{eNo}
+	</select>
+	
+	<delete id="delete" parameterType="long">
+		DELETE FROM EXERCISE_MY WHERE EM_NO = #{emNo}
+	</delete>
+	
+	<insert id="insert" parameterType="org.ourapp.udada.exercise.Exercise_myDTO">
+		INSERT INTO EXERCISE_MY (EM_NO, M_EMAIL, E_NO, EM_TIME)
+		VALUES (SEQ_EM.NEXTVAL, #{mEmail}, #{eNo}, #{emTime})
+	</insert>
+	
+	<select id="selectWithImageAndPagingAndSearch" resultMap="exerciseMap">
+	<![CDATA[
+		SELECT SSUB.* FROM
+		(SELECT SUB.*, ROWNUM AS RN FROM
+		(SELECT 
+		E.E_NO, E.E_NAME, E.E_STR, E.E_KCAL
+		FROM EXERCISE E  
+       ]]>     		
+    <where>  
+	<if test = "keyword != null">
+		E.E_NAME LIKE '%'||#{keyword}||'%'
+	</if>
+	</where>   
+    <![CDATA[
+		ORDER BY E_NO DESC) SUB) SSUB
+		WHERE SSUB.RN > (#{pageNum}-1) * #{pageSize} AND SSUB.RN <= #{pageNum} * #{pageSize}         
+	]]>
+	</select>
+	
+	<select id="countAllWithSearch" resultType="int">
+		SELECT COUNT(E_NO) FROM EXERCISE
+	<where>  
+		<if test = "keyword != null">
+		E_NAME LIKE '%'||#{keyword}||'%'
+		</if>
+	</where>
+	</select>
+	
+	<select id="getMyExcsList" resultMap="exerciseGetMyListMap">
+			SELECT * FROM
+			(SELECT SUM(C.TOTAL_KCAL)TOTAL_KCAL, C.EM_DATE FROM
+			(SELECT ((A.EM_TIME*B.E_KCAL)/5)TOTAL_KCAL, TO_CHAR(A.EM_DATE,'YYYY-MM-DD')EM_DATE FROM EXERCISE_MY A
+			INNER JOIN EXERCISE B
+			ON A.E_NO=B.E_NO
+			WHERE A.M_EMAIL=#{mEmail})C
+			GROUP BY C.EM_DATE
+			ORDER BY C.EM_DATE)
+	</select>
+	
+</mapper>
+
