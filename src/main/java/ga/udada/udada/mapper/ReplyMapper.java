@@ -1,7 +1,9 @@
 package ga.udada.udada.mapper;
 
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+@Mapper
 public interface ReplyMapper {
 
 	int insert(@Param("reContent")String reContent, @Param("oriNo")Long oriNo, @Param("mEmail")String mEmail, @Param("reDiv")String reDiv);

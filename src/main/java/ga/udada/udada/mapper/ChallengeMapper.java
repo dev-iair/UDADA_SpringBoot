@@ -2,6 +2,7 @@ package ga.udada.udada.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import ga.udada.udada.challenge.ChallengeDTO;
 import ga.udada.udada.challenge.ChallengeGetListDTO;
@@ -21,6 +22,7 @@ import ga.udada.udada.challenge.MyChallengeGetTalkDTO;
 import ga.udada.udada.challenge.MyChallengeProceedDTO;
 import ga.udada.udada.challenge.MyChallengeSuccessCntDDTO;
 
+@Mapper
 public interface ChallengeMapper {
 
 	List<ChallengeListDTO> loadList(ChallengeGetListDTO challengeGetListDTO);

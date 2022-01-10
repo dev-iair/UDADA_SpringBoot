@@ -2,11 +2,14 @@ package ga.udada.udada.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import ga.udada.udada.EndSoonChallengeDTO;
-import ga.udada.udada.HighRateRecipeDTO;
-import ga.udada.udada.HotJournalDTO;
 
+import ga.udada.udada.home.EndSoonChallengeDTO;
+import ga.udada.udada.home.HighRateRecipeDTO;
+import ga.udada.udada.home.HotJournalDTO;
+
+@Mapper
 public interface HomeMapper {
 
 	List<HotJournalDTO> getHotJournal();

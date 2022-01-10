@@ -2,6 +2,7 @@ package ga.udada.udada.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import ga.udada.udada.journal.JournalDTO;
 import ga.udada.udada.journal.LikeyouDTO;
@@ -9,7 +10,7 @@ import ga.udada.udada.recipe.PageRequestDTO;
 import ga.udada.udada.reply.ReplyDTO;
 
 
-
+@Mapper
 public interface JournalMapper {
 
 	List<JournalDTO> getList();

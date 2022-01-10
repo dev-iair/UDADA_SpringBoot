@@ -2,10 +2,12 @@ package ga.udada.udada.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import ga.udada.udada.member.MemberDTO;
 import ga.udada.udada.member.MemberSpecDTO;
 
+@Mapper
 public interface MemberMapper {
 	
 	void join(MemberDTO memberDTO);

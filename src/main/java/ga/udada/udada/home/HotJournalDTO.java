@@ -1,4 +1,4 @@
-package ga.udada.udada;
+package ga.udada.udada.home;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,11 +10,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class EndSoonChallengeDTO {
+public class HotJournalDTO {
 	
-	private Long cNo;
-	private String cTitle;
-	private int dDay;
-	private int cCount;
+	private Long jNo;
+	private String mName;
+	private String jDate;
+	private String lCnt;
+	private String jContent;
 	
 }

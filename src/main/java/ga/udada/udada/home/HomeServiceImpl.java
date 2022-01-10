@@ -1,4 +1,4 @@
-package ga.udada.udada;
+package ga.udada.udada.home;
 
 import java.util.List;
 
@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-
 public class HomeServiceImpl implements HomeService{
 
 	@Autowired

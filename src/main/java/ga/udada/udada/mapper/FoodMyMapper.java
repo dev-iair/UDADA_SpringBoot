@@ -2,12 +2,14 @@ package ga.udada.udada.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import ga.udada.udada.foodmy.FoodMyDTO;
 import ga.udada.udada.foodmy.FoodMyDayTotalDTO;
 import ga.udada.udada.foodmy.FoodMyMemberSpecDTO;
 import ga.udada.udada.foodmy.FoodMyResultDTO;
 
+@Mapper
 public interface FoodMyMapper {
 
 	List<FoodMyResultDTO> select(@Param("day")String day, @Param("mEmail")String mEmail);

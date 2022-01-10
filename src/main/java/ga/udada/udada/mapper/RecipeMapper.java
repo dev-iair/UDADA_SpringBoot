@@ -2,11 +2,14 @@ package ga.udada.udada.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Mapper;
+
 import ga.udada.udada.foodmy.FoodMyDTO;
 import ga.udada.udada.recipe.PageRequestDTO;
 import ga.udada.udada.recipe.RecipeDTO;
 import ga.udada.udada.recipe.RecipeSpecDTO;
 
+@Mapper
 public interface RecipeMapper {
 
 	List<RecipeDTO> getList();

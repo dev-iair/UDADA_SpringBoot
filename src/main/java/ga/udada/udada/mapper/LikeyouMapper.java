@@ -1,7 +1,9 @@
 package ga.udada.udada.mapper;
 
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+@Mapper
 public interface LikeyouMapper {
 
 	int getLike(@Param("jNo") Long jNo, @Param("mEmail") String mEmail);

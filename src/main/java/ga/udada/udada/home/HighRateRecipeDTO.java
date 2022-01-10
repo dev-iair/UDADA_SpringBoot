@@ -1,4 +1,4 @@
-package ga.udada.udada;
+package ga.udada.udada.home;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

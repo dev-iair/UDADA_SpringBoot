@@ -1,5 +1,7 @@
 spring:
-  datasource:
-    url: jdbc:mariadb://132.145.89.225:3306/mariadb
-    driverClassName: org.mariadb.jdbc.Driver
-    username: udada
+    datasource:
+      hikari:
+        jdbc-url: jdbc:mariadb://0.0.0.0/mariadb
+        driverClassName: org.mariadb.jdbc.Driver
+        username: udada
+        password: -----
